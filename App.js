@@ -7,10 +7,22 @@
  */
 
 import React from 'react';
-import Game from './AppModules/Game/View/game';
+import {persistor, store} from './MyApp/Redux/store';
+import AppNavigation from './MyApp/Navigation/navigation';
+import {PersistGate} from 'redux-persist/integration/react';
+import {Provider} from 'react-redux';
 
-const App = () => {
-  return <Game />;
-};
+
+class App extends React.Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <AppNavigation />
+        </PersistGate>
+      </Provider>
+    );
+  }
+}
 
 export default App;
