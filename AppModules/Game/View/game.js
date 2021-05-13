@@ -1,9 +1,10 @@
-﻿import React from 'react';
-import {Text, View, TouchableOpacity, Alert} from 'react-native';
+﻿import React, {useState} from 'react';
+import {Text, View, TouchableOpacity, Alert, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {GameStyles} from './Styles/gameStyle';
 
 const Game = () => {
+  const AnimatedIcon = Animated.createAnimatedComponent(Icon);
   const x = 3;
   const length = Array(3).fill(0);
   const [gameState, setGameState] = React.useState([
@@ -12,13 +13,23 @@ const Game = () => {
     [0, 0, 0],
   ]);
   const [currentPlayer, setCurrentPlayer] = React.useState(1);
-
+  const [spring, setSpring] = useState(new Animated.Value(0));
+  const [animatedValue, setAnimatedValues] = useState([
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ]);
   React.useEffect(() => {
     getInitialState();
   }, []);
 
   const getInitialState = () => {
     setGameState([
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]);
+    setAnimatedValues([
       [0, 0, 0],
       [0, 0, 0],
       [0, 0, 0],
@@ -66,8 +77,16 @@ const Game = () => {
 
     return 0;
   };
-
+  const updatePressedTiles = (row, col) => {
+    setTimeout(() => {
+      let arr = animatedValue.slice();
+      arr[row][col] = currentPlayer;
+      setAnimatedValues(arr);
+    }, 300);
+  };
   const onTilePress = (row, col) => {
+    renderSpringAnimation(row, col);
+    updatePressedTiles(row, col);
     const value = gameState[row][col];
     if (value !== 0) {
       return;
@@ -89,13 +108,49 @@ const Game = () => {
     }
   };
 
+  const renderSpringAnimation = (row, col) => {
+    Animated.spring(spring, {
+      toValue: 1,
+      friction: 10,
+      velocity: 10,
+      tension: 10,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const isSquarePresses = (row, col) => {
+    let val = animatedValue[row][col];
+    console.log(val);
+    return val === 0;
+  };
+
   const renderIcon = (row, col) => {
+    isSquarePresses(row, col);
+    const springView = {
+      transform: [{scale: spring}],
+    };
     let val = gameState[row][col];
     switch (val) {
       case 1:
-        return <Icon name="close" style={GameStyles.iconStyle} />;
+        return (
+          <AnimatedIcon
+            name="close"
+            style={[
+              GameStyles.iconStyle,
+              isSquarePresses(row, col) && springView,
+            ]}
+          />
+        );
       case -1:
-        return <Icon name="circle-outline" style={GameStyles.iconStyle1} />;
+        return (
+          <AnimatedIcon
+            name="circle-outline"
+            style={[
+              GameStyles.iconStyle1,
+              isSquarePresses(row, col) && springView,
+            ]}
+          />
+        );
       default:
         return <View />;
     }

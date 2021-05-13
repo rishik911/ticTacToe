@@ -5,13 +5,15 @@ export const GameStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightskyblue',
+    backgroundColor: '#eeeeee',
   },
   container: {
-    borderWidth: 10,
+    borderWidth: 1,
     width: 100,
     height: 100,
     borderColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   iconStyle: {
     fontSize: 70,
